@@ -10,6 +10,9 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "dat.gui": "^0.7.5",
+    "oimo": "^1.0.9",
+    "three": "^0.101.1",
     "vue": "^2.5.22",
     "vue-router": "^3.0.1",
     "vue-threejs": "^0.2.0-alpha.1",
