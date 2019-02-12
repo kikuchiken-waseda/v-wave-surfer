@@ -1,6 +1,10 @@
 <template>
   <v-card>
-    <div id="waveform" />
+    <v-card>
+      <div id="spectrogram" />
+      <div id="waveform" />
+      <div id="timeline" />
+    </v-card>
     <v-card-actions>
       <v-btn icon @click="play()">
         <v-icon>{{ this.play_icon }}</v-icon>
@@ -14,11 +18,30 @@
 </template>
 
 <script>
-import WaveSurfer from "wavesurfer";
+import WaveSurfer from "wavesurfer.js";
+import TimelinePlugin from "wavesurfer.js/dist/plugin/wavesurfer.timeline.js";
+import SpectrogramPlugin from "wavesurfer.js/dist/plugin/wavesurfer.spectrogram.js";
+
 export default {
   data: () => ({
-    wavesurfer: null
+    wavesurfer: null,
+    options: {
+      container: "#waveform",
+      waveColor: "violet",
+      progressColor: "purple",
+      minPxPerSec: 100,
+      scrollParent: true,
+      plugins: [
+        TimelinePlugin.create({
+          container: "#timeline"
+        }),
+        SpectrogramPlugin.create({
+          container: "#spectrogram"
+        })
+      ]
+    }
   }),
+  props: ["audio"],
   computed: {
     duration() {
       if (this.wavesurfer === null) {
@@ -33,6 +56,13 @@ export default {
           return 0;
         } else {
           return this.wavesurfer.getCurrentTime();
+        }
+      },
+      set: function(seconds) {
+        if (seconds >= this.duration) {
+          this.wavesurfer.seekTo(1);
+        } else {
+          this.wavesurfer.seekTo(seconds / this.duration);
         }
       }
     },
@@ -52,7 +82,11 @@ export default {
   },
   methods: {
     load: function(file) {
-      this.wavesurfer.load(file);
+      this.$nextTick(() => {
+        this.wavesurfer = WaveSurfer.create(this.options);
+        this.wavesurfer.load(file);
+        this.wavesurfer.setCurrentTime(10);
+      });
     },
     play: function() {
       if (this.is_playing) {
@@ -63,16 +97,7 @@ export default {
     }
   },
   mounted: function() {
-    const file = require("../assets/data/pretest_000_left.wav");
-    this.$nextTick(() => {
-      this.wavesurfer = new WaveSurfer.create({
-        container: "#waveform",
-        waveColor: "violet",
-        progressColor: "purple",
-        plugins: []
-      });
-      this.load(file);
-    });
+    this.load(this.audio);
   }
 };
 </script>
