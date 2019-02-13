@@ -14,45 +14,17 @@
 <script>
 import * as THREE from "three";
 export default {
+  props: {
+    frame_rate: {
+      type: Number,
+      require: true
+    },
+    series: {
+      type: Array,
+      require: true
+    }
+  },
   data: () => ({
-    frame_rate: 0.1,
-    series: [
-      [
-        { x: 0, y: 1, z: 1 },
-        { x: 1, y: 1, z: 1 },
-        { x: 2, y: 1, z: 1 },
-        { x: 3, y: 1, z: 1 },
-        { x: 4, y: 1, z: 1 }
-      ],
-      [
-        { x: 0, y: 2, z: 1 },
-        { x: 1, y: 2, z: 1 },
-        { x: 2, y: 2, z: 1 },
-        { x: 3, y: 2, z: 1 },
-        { x: 4, y: 2, z: 1 }
-      ],
-      [
-        { x: 0, y: 3, z: 1 },
-        { x: 1, y: 3, z: 1 },
-        { x: 2, y: 3, z: 1 },
-        { x: 3, y: 3, z: 1 },
-        { x: 4, y: 3, z: 1 }
-      ],
-      [
-        { x: 0, y: 4, z: 1 },
-        { x: 1, y: 4, z: 1 },
-        { x: 2, y: 4, z: 1 },
-        { x: 3, y: 4, z: 1 },
-        { x: 4, y: 4, z: 1 }
-      ],
-      [
-        { x: 0, y: 5, z: 1 },
-        { x: 1, y: 5, z: 1 },
-        { x: 2, y: 5, z: 1 },
-        { x: 3, y: 5, z: 1 },
-        { x: 4, y: 5, z: 1 }
-      ]
-    ],
     current_time: 0,
     current_frame: 0,
     is_playing: false,
