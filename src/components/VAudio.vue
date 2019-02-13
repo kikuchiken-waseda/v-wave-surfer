@@ -25,6 +25,8 @@ import SpectrogramPlugin from "wavesurfer.js/dist/plugin/wavesurfer.spectrogram.
 export default {
   data: () => ({
     wavesurfer: null,
+    intervalId: undefined,
+    play_time: 0,
     options: {
       container: "#waveform",
       waveColor: "violet",
@@ -55,7 +57,7 @@ export default {
         if (this.wavesurfer === null) {
           return 0;
         } else {
-          return this.wavesurfer.getCurrentTime();
+          return this.play_time + this.wavesurfer.getCurrentTime();
         }
       },
       set: function(seconds) {
@@ -91,13 +93,30 @@ export default {
     play: function() {
       if (this.is_playing) {
         this.wavesurfer.pause();
+        if (this.intervalId !== undefined) {
+          this.play_time = 0;
+          clearInterval(this.intervalId);
+        }
       } else {
         this.wavesurfer.play();
+        let self = this;
+        this.intervalId = setInterval(function() {
+          if (self.current_time < self.duration) {
+            if (self.is_playing) {
+              self.play_time += 0.001;
+            }
+          }
+        }, 1);
       }
     }
   },
   mounted: function() {
     this.load(this.audio);
+  },
+  beforeDestroy() {
+    if (clearInterval !== undefined) {
+      clearInterval(this.intervalId);
+    }
   }
 };
 </script>
