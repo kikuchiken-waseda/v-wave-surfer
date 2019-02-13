@@ -1,0 +1,35 @@
+<template>
+  <v-card>
+    <div ref="stage"></div>
+  </v-card>
+</template>
+
+<script>
+import * as THREE from "three";
+export default {
+  data: () => ({
+    scene: null,
+    renderer: null,
+    camera: null,
+    light: null,
+    cube: null
+  }),
+  mounted: function() {
+    this.scene = new THREE.Scene();
+    this.renderer = new THREE.WebGLRenderer();
+    this.$nextTick(() => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      this.renderer.setSize(width, height);
+      this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+      this.camera.position.z = 5;
+    });
+
+    // === light ===
+    const light = new THREE.DirectionalLight(0xffffff);
+    light.position.set(0, 0, 10);
+  }
+};
+</script>
+
+<style scoped></style>

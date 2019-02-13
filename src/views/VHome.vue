@@ -3,16 +3,16 @@
     <v-layout wrap>
       <v-flex xs12>
         <v-layout wrap row>
-          <v-flex xs6>
-            <v-wave />
-          </v-flex>
-          <v-flex xs6>
+          <v-wave />
+          <v-flex ml-2>
             <v-audio-list />
           </v-flex>
         </v-layout>
       </v-flex>
       <v-flex xs12>
-        <v-audio :audio="audio" />
+        <v-flex xs12>
+          <v-audio :audio="audio" />
+        </v-flex>
       </v-flex>
     </v-layout>
   </v-container>
