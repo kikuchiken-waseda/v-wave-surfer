@@ -13,6 +13,7 @@
 
 <script>
 import * as THREE from "three";
+import * as OrbitControls from "three-orbitcontrols";
 export default {
   props: {
     frame_rate: {
@@ -32,6 +33,7 @@ export default {
     scene: null,
     renderer: null,
     camera: null,
+    controls: null,
     light: null,
     plane: null,
     axes: null,
@@ -71,6 +73,7 @@ export default {
       const width = this.windowSize.x;
       const height = this.windowSize.y;
       this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+      this.controls = new OrbitControls(this.camera, this.renderer.domElement);
       this.camera.position.z = 5;
       this.scene.add(this.camera);
     },
@@ -79,14 +82,14 @@ export default {
       this.light.position.set(0, 0, 10);
       this.scene.add(this.light);
     },
-    set_object(obj) {
-      if (obj.size === undefined) {
-        obj.size = 0.1;
+    set_object(data) {
+      if (data.size === undefined) {
+        data.size = 0.1;
       }
-      const geometry = new THREE.SphereGeometry(obj.size);
+      const geometry = new THREE.SphereGeometry(data.size);
       const material = new THREE.MeshLambertMaterial({ color: 0x6699ff });
       const mesh = new THREE.Mesh(geometry, material);
-      mesh.position.set(obj.x, obj.y, obj.z);
+      mesh.position.set(data.t_x, data.t_y, data.t_z);
       this.objects.push(mesh);
       this.scene.add(mesh);
     },
@@ -105,11 +108,17 @@ export default {
       for (const n in data) {
         const obj = this.objects[n];
         const item = data[n];
-        obj.translateX(item.x - obj.position.x);
-        obj.translateY(item.y - obj.position.y);
-        obj.translateZ(item.z - obj.position.z);
+        if (item.state == "OK") {
+          obj.translateX(item.t_x - obj.position.x);
+          obj.translateY(item.t_y - obj.position.y);
+          obj.translateZ(item.t_z - obj.position.z);
+        }
       }
       this.renderer.render(this.scene, this.camera);
+    },
+    update() {
+      this.renderer.render(this.scene, this.camera);
+      requestAnimationFrame(this.update);
     },
     play: function() {
       if (this.is_playing) {
@@ -138,13 +147,16 @@ export default {
       this.set_plane();
       this.set_axes();
 
-      const datas = this.series[0];
+      const i = this.series.findIndex(sensers => {
+        sensers[0].state == "OK";
+      });
+      const datas = this.series[i];
       for (const data of datas) {
         this.set_object(data);
       }
       this.$refs.stage.appendChild(this.renderer.domElement);
       this.renderer.render(this.scene, this.camera);
-      // this.play();
+      this.update();
     });
   },
   beforeDestroy() {
