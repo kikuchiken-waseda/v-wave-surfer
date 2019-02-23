@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*
-"""WAVE から出力されたTSV をJSONフォーマットに変更する."""
+"""同階層に存在する WAVE-TSV ファイルを JSON フォーマットに変更."""
 
 
 def load_tsv(fname):
@@ -19,6 +19,7 @@ def load_tsv(fname):
 
 
 def parse(row):
+    """それぞれのフレームに起ける各センサーの情報を抽出します．"""
     time = float(row[0])
     body = row[1:]
     sensers = []
@@ -40,10 +41,24 @@ def parse(row):
     return time, sensers
 
 
+def main(fname):
+    from json import dumps
+    fps, sensers = load_tsv(fname)
+    dic = {
+        "fps": fps,
+        "sensers": sensers
+    }
+    return dumps(dic, indent=2)
+
+
 if __name__ == "__main__":
     from pathlib import Path
+    from operator import itemgetter
     for p in Path(__file__).parent.glob("*.tsv"):
         fname = p.resolve()
-        fps, body = load_tsv(fname)
-        print(fps)
-        # parser(body)
+        json_str = main(fname)
+
+        json_name = "{}.json".format(fname.stem)
+        with open(json_name, "w") as f:
+            f.write(json_str)
+
