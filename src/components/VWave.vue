@@ -2,11 +2,9 @@
   <v-card>
     <div ref="stage" v-resize="onResize" />
     <v-card-actions>
-      <v-btn icon @click="play()">
-        <v-icon>{{ this.play_icon }}</v-icon>
-      </v-btn>
-      <v-spacer></v-spacer>
       <span> {{ Math.round(current_time * 100) / 100 }} </span>
+      <span> / {{ series.length * frame_rate }} </span>
+      <span> / {{ sensers.length }} </span>
     </v-card-actions>
   </v-card>
 </template>
@@ -26,9 +24,6 @@ export default {
     }
   },
   data: () => ({
-    current_time: 0,
-    current_frame: 0,
-    is_playing: false,
     interval_id: null,
     scene: null,
     renderer: null,
@@ -37,39 +32,38 @@ export default {
     light: null,
     plane: null,
     axes: null,
-    objects: [],
+    sensers: [],
     windowSize: {
       x: 0,
       y: 0
     }
   }),
   computed: {
-    play_icon() {
-      if (this.is_playing) {
-        return "pause";
+    current_time: {
+      get() {
+        return this.$store.state.current_time;
       }
-      return "play_arrow";
     }
   },
   methods: {
-    onResize() {
+    onResize: function() {
       this.windowSize = {
-        x: window.innerWidth * 0.2,
-        y: window.innerWidth * 0.2
+        x: window.innerWidth * 0.3,
+        y: window.innerWidth * 0.3
       };
       if (this.renderer !== null) {
         this.renderer.setSize(this.windowSize.x, this.windowSize.y);
       }
     },
-    set_scene() {
+    set_scene: function() {
       this.scene = new THREE.Scene();
     },
-    set_rendere() {
+    set_rendere: function() {
       this.renderer = new THREE.WebGLRenderer();
       this.renderer.setClearColor(0xffffff, 1.0);
       this.onResize();
     },
-    set_cemmera() {
+    set_cemmera: function() {
       const width = this.windowSize.x;
       const height = this.windowSize.y;
       this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
@@ -77,64 +71,63 @@ export default {
       this.camera.position.z = 5;
       this.scene.add(this.camera);
     },
-    set_light() {
+    set_light: function() {
       this.light = new THREE.DirectionalLight(0xffffff, 1);
       this.light.position.set(0, 0, 10);
       this.scene.add(this.light);
     },
-    set_object(data) {
+    set_object: function(data) {
       if (data.size === undefined) {
         data.size = 0.1;
       }
       const geometry = new THREE.SphereGeometry(data.size);
-      const material = new THREE.MeshLambertMaterial({ color: 0x6699ff });
+      const material = new THREE.MeshBasicMaterial({
+        color: "rgb(0, 150, 136)"
+      });
       const mesh = new THREE.Mesh(geometry, material);
-      mesh.position.set(data.t_x, data.t_y, data.t_z);
-      this.objects.push(mesh);
+      if (data.state == "OK") {
+        mesh.position.set(data.t_x, data.t_y, data.t_z);
+      } else {
+        mesh.position.set(0, 0, 0);
+      }
+      this.sensers.push({
+        id: data.id,
+        mesh: mesh
+      });
       this.scene.add(mesh);
     },
-    set_plane() {
+    set_plane: function() {
       this.plane = new THREE.GridHelper(300, 10, 0x888888, 0x888888);
       this.plane.position.y = -40;
       this.scene.add(this.plane);
     },
-    set_axes() {
+    set_axes: function() {
       this.axes = new THREE.AxesHelper(150);
       this.scene.add(this.axes);
     },
-    animate() {
-      const i = this.current_frame % this.series.length;
+    animate: function() {
+      const i = Math.round(this.current_time / this.frame_rate);
       const data = this.series[i];
       for (const n in data) {
-        const obj = this.objects[n];
+        const obj = this.sensers.find(x => {
+          return x.id == data[n].id;
+        });
         const item = data[n];
         if (item.state == "OK") {
-          obj.translateX(item.t_x - obj.position.x);
-          obj.translateY(item.t_y - obj.position.y);
-          obj.translateZ(item.t_z - obj.position.z);
+          obj.mesh.translateX(item.t_x - obj.mesh.position.x);
+          obj.mesh.translateY(item.t_y - obj.mesh.position.y);
+          obj.mesh.translateZ(item.t_z - obj.mesh.position.z);
+          obj.mesh.material.color.setRGB("rgb(0, 150, 136)");
+        } else {
+          obj.mesh.material.color.setRGB("rgb(233, 30, 99)");
         }
       }
       this.renderer.render(this.scene, this.camera);
+      requestAnimationFrame(this.animate);
     },
-    update() {
+    update: function() {
       this.renderer.render(this.scene, this.camera);
       requestAnimationFrame(this.update);
-    },
-    play: function() {
-      if (this.is_playing) {
-        this.current_time = 0;
-        this.current_frame = 0;
-        clearInterval(this.interval_id);
-        this.is_playing = false;
-      } else {
-        let self = this;
-        this.interval_id = setInterval(function() {
-          self.current_frame += 1;
-          self.current_time += self.frame_rate;
-          self.animate();
-        }, this.frame_rate * 1000);
-        this.is_playing = true;
-      }
     }
   },
   mounted: function() {
@@ -146,9 +139,8 @@ export default {
       this.set_light();
       this.set_plane();
       this.set_axes();
-
-      const i = this.series.findIndex(sensers => {
-        sensers[0].state == "OK";
+      const i = this.series.findIndex(x => {
+        return x[0].state == "OK";
       });
       const datas = this.series[i];
       for (const data of datas) {
@@ -156,15 +148,9 @@ export default {
       }
       this.$refs.stage.appendChild(this.renderer.domElement);
       this.renderer.render(this.scene, this.camera);
+      this.animate();
       this.update();
     });
-  },
-  beforeDestroy() {
-    if (clearInterval !== null) {
-      clearInterval(this.interval_id);
-    }
   }
 };
 </script>
-
-<style scoped></style>
