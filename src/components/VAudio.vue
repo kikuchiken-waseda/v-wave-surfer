@@ -4,6 +4,7 @@
       <div id="spectrogram" />
       <div id="waveform" />
       <div id="timeline" />
+      <div id="minimap" />
     </v-card>
     <v-card-actions>
       <v-btn icon @click="play()">
@@ -22,6 +23,7 @@
 import WaveSurfer from "wavesurfer.js";
 import TimelinePlugin from "wavesurfer.js/dist/plugin/wavesurfer.timeline.js";
 import SpectrogramPlugin from "wavesurfer.js/dist/plugin/wavesurfer.spectrogram.js";
+import MiniMapPlugin from "wavesurfer.js/dist/plugin/wavesurfer.minimap.js";
 
 export default {
   data: () => ({
@@ -40,6 +42,9 @@ export default {
         }),
         SpectrogramPlugin.create({
           container: "#spectrogram"
+        }),
+        MiniMapPlugin.create({
+          container: "#minimap"
         })
       ]
     }

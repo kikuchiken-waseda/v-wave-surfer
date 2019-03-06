@@ -1,5 +1,5 @@
 <template>
-  <v-container grid-list-md>
+  <v-container fluid fill-height>
     <v-layout wrap v-show="$store.state.is_loading">
       <v-progress-circular
         :size="100"
@@ -9,18 +9,16 @@
       />
     </v-layout>
     <v-layout wrap v-show="!$store.state.is_loading">
-      <v-flex xs12> </v-flex>
       <v-flex xs12>
-        <v-layout wrap row>
+        <v-layout wrap row align-end>
           <v-wave :frame_rate="data.fps" :series="items" />
           <v-flex ml-2>
+            <v-audio-list mb-2 />
             <v-audio :audio="audio" />
           </v-flex>
         </v-layout>
       </v-flex>
-      <v-flex xs12>
-        <v-audio-list />
-      </v-flex>
+      <v-flex xs12> </v-flex>
     </v-layout>
   </v-container>
 </template>
