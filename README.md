@@ -1,17 +1,5 @@
 # v-wave-surfer
 
-Vue.js components for observing some articulatory data.
-
-## Introduction
-
-このツールは 舌運動計測装置 WAVE で収録された調音運動データを観察するための
-フロントエンドツールになります．
-
-- vue.js
-- vuetify.js
-- vue-threejs
-- wavesufer.js
-
 ## Project setup
 ```
 yarn install
@@ -19,32 +7,27 @@ yarn install
 
 ### Compiles and hot-reloads for development
 ```
-yarn run serve
+yarn serve
 ```
 
 ### Compiles and minifies for production
 ```
-yarn run build
-```
-
-### Run your tests
-```
-yarn run test
-```
-
-### Lints and fixes files
-```
-yarn run lint
-```
-
-### Run your end-to-end tests
-```
-yarn run test:e2e
+yarn build
 ```
 
 ### Run your unit tests
 ```
-yarn run test:unit
+yarn test:unit
+```
+
+### Run your end-to-end tests
+```
+yarn test:e2e
+```
+
+### Lints and fixes files
+```
+yarn lint
 ```
 
 ### Customize configuration

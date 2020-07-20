@@ -1,50 +1,49 @@
 <template>
   <v-app>
-    <v-navigation-drawer v-model="drawerRight" fixed right clipped app>
-      <v-list dense>
-        <v-list-tile>
-          <v-list-tile-action>
-            <v-icon>exit_to_app</v-icon>
-          </v-list-tile-action>
-        </v-list-tile>
-      </v-list>
-    </v-navigation-drawer>
+    <v-app-bar app color="primary" dark>
+      <div class="d-flex align-center">
+        <v-img
+          alt="Vuetify Logo"
+          class="shrink mr-2"
+          contain
+          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
+          transition="scale-transition"
+          width="40"
+        />
 
-    <v-toolbar color="blue-grey" dark fixed app clipped-right>
-      <v-toolbar-side-icon @click.stop="drawerLeft = !drawerLeft" />
-      <v-toolbar-title>V-WAVE-VUER</v-toolbar-title>
+        <v-img
+          alt="Vuetify Name"
+          class="shrink mt-1 hidden-sm-and-down"
+          contain
+          min-width="100"
+          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
+          width="100"
+        />
+      </div>
+
       <v-spacer></v-spacer>
-      <v-toolbar-side-icon @click.stop="drawerRight = !drawerRight" />
-    </v-toolbar>
 
-    <v-navigation-drawer v-model="drawerLeft" fixed app>
-      <v-list dense>
-        <v-list-tile>
-          <v-list-tile-action>
-            <v-icon>exit_to_app</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title> </v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-      </v-list>
-    </v-navigation-drawer>
+      <v-btn
+        href="https://github.com/vuetifyjs/vuetify/releases/latest"
+        target="_blank"
+        text
+      >
+        <span class="mr-2">Latest Release</span>
+        <v-icon>mdi-open-in-new</v-icon>
+      </v-btn>
+    </v-app-bar>
 
-    <v-content>
-      <router-view></router-view>
-    </v-content>
+    <v-main>
+      <v-container class="fill-height" fluid>
+        <router-view></router-view>
+      </v-container>
+    </v-main>
   </v-app>
 </template>
 
 <script>
 export default {
   name: "App",
-  components: {},
-  data() {
-    return {
-      drawerLeft: false,
-      drawerRight: false
-    };
-  }
+  data: () => ({}),
 };
 </script>
