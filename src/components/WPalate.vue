@@ -24,8 +24,28 @@ export default {
     const geometry = new THREE.BoxGeometry(1, 1, 1);
     const material = new THREE.MeshNormalMaterial();
     const cube = new THREE.Mesh(geometry, material);
-    const dodeca = null;
-    return { dodeca, scene, renderer, camera, light, geometry, material, cube };
+    const obj = null;
+    const cameraRoutation = {
+      x: 0,
+      y: 0,
+    };
+    const objRoutation = {
+      x: 0,
+      y: 0,
+      z: 0,
+    };
+    return {
+      obj,
+      scene,
+      renderer,
+      camera,
+      light,
+      geometry,
+      material,
+      cube,
+      cameraRoutation,
+      objRoutation,
+    };
   },
   props: {
     src: {
@@ -36,10 +56,19 @@ export default {
       type: Number,
       default: 1,
     },
+    cameraPosition: {
+      type: Number,
+      default: 200,
+    },
   },
   watch: {
     src: function (val, old_val) {
       if (val != old_val) this.load_obj(val);
+    },
+    cameraPosition: function (val, old_val) {
+      if (val) {
+        if (val != old_val) this.updateCPositionZ(val);
+      }
     },
   },
   methods: {
@@ -63,28 +92,112 @@ export default {
       this.$nextTick(() => {
         const loader = new THREE.OBJLoader();
         loader.load(obj_path, function (res) {
-          if (vm.dodeca != null) {
-            vm.dodeca = null;
-            vm.scene.remove(vm.dodeca);
+          if (vm.obj != null) {
+            vm.obj = null;
+            vm.scene.remove(vm.obj);
           }
-          vm.dodeca = res;
-          vm.scene.add(vm.dodeca);
+          vm.obj = res;
+          vm.scene.add(vm.obj);
           vm.renderer.render(vm.scene, vm.camera);
         });
       });
     },
-    animetion() {
-      this.$nextTick(() => {
-        requestAnimationFrame(() => {
-          this.animetion();
-        });
-        if (this.dodeca) {
-          // this.dodeca.rotation.x += 0.01;
-          // this.dodeca.rotation.y += 0.01;
-          //this.dodeca.rotation.z += 0.01;
-          this.renderer.render(this.scene, this.camera);
-        }
-      });
+    updateORotX: function (rot) {
+      const radian = (rot * Math.PI) / 180;
+      this.obj.rotation.x = radian;
+      this.renderer.render(this.scene, this.camera);
+    },
+    updateORotY: function (rot) {
+      const radian = (rot * Math.PI) / 180;
+      this.obj.rotation.y = radian;
+      this.renderer.render(this.scene, this.camera);
+    },
+    updateORotZ: function (rot) {
+      const radian = (rot * Math.PI) / 180;
+      this.obj.rotation.z = radian;
+      this.renderer.render(this.scene, this.camera);
+    },
+    updateCRotX: function (rot) {
+      const radian = (rot * Math.PI) / 180;
+      this.camera.position.x = this.cameraPosition * Math.sin(radian);
+      this.camera.position.z = this.cameraPosition * Math.cos(radian);
+      this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+      this.renderer.render(this.scene, this.camera);
+    },
+    updateCRotY: function (rot) {
+      const radian = (rot * Math.PI) / 180;
+      this.camera.position.y = this.cameraPosition * Math.sin(radian);
+      this.camera.position.z = this.cameraPosition * Math.cos(radian);
+      this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+      this.renderer.render(this.scene, this.camera);
+    },
+    updateCPositionZ: function (position) {
+      this.camera.position.set(0, 0, position);
+      this.renderer.render(this.scene, this.camera);
+    },
+    incOX: function () {
+      this.obj.translateX(1);
+      this.renderer.render(this.scene, this.camera);
+    },
+    decOX: function () {
+      this.obj.translateX(-1);
+      this.renderer.render(this.scene, this.camera);
+    },
+    incOY: function () {
+      this.obj.translateY(1);
+      this.renderer.render(this.scene, this.camera);
+    },
+    decOY: function () {
+      this.obj.translateY(-1);
+      this.renderer.render(this.scene, this.camera);
+    },
+    incOZ: function () {
+      this.obj.translateZ(1);
+      this.renderer.render(this.scene, this.camera);
+    },
+    decOZ: function () {
+      this.obj.translateZ(-1);
+      this.renderer.render(this.scene, this.camera);
+    },
+    incORotX: function () {
+      this.objRoutation.x += 1;
+      this.updateORotX(this.objRoutation.x);
+    },
+    decORotX: function () {
+      this.objRoutation.x -= 1;
+      this.updateORotX(this.objRoutation.x);
+    },
+    incORotY: function () {
+      this.objRoutation.y += 1;
+      this.updateORotY(this.objRoutation.y);
+    },
+    decORotY: function () {
+      this.objRoutation.y -= 1;
+      this.updateORotY(this.objRoutation.y);
+    },
+    incORotZ: function () {
+      this.objRoutation.z += 1;
+      this.updateORotZ(this.objRoutation.z);
+    },
+    decORotZ: function () {
+      this.objRoutation.z -= 1;
+      this.updateORotZ(this.objRoutation.z);
+    },
+    incCRotX: function () {
+      this.cameraRoutation.x += 1;
+      this.updateCRotX(this.cameraRoutation.x);
+    },
+    decCRotX: function () {
+      this.cameraRoutation.x -= 1;
+      this.updateCRotX(this.cameraRoutation.x);
+    },
+    incCRotY: function () {
+      this.cameraRoutation.y += 1;
+      this.updateCRotY(this.cameraRoutation.y);
+    },
+    decCRotY: function () {
+      this.cameraRoutation.y -= 1;
+      this.updateCRotY(this.cameraRoutation.y);
     },
   },
   mounted() {
@@ -94,7 +207,6 @@ export default {
       antialias: true,
       canvas: canvas,
     });
-
     // 地面を作成
     if (this.scene) {
       const plane2 = new THREE.GridHelper(600);
@@ -102,12 +214,14 @@ export default {
       this.scene.add(plane);
       this.scene.add(plane2);
     }
-
-    this.camera.position.set(0, 0, 200);
+    // カメラ, 光源, シーンの追加
+    this.camera.position.set(0, 0, this.cameraPosition);
     this.light.position.set(0, 0, 10);
     this.scene.add(this.light);
+    this.renderer.render(this.scene, this.camera);
+
+    // シーンにオブジェクトを表示
     this.load_obj(this.src);
-    this.animetion();
   },
 };
 </script>
