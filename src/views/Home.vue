@@ -148,6 +148,11 @@
             </template>
           </v-slider>
         </v-card-text>
+        <v-card-actions v-if="plateUrl">
+          <v-btn @click="saveObj" block color="secondary" dark>
+            Download 3D Data
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-col>
   </v-row>
@@ -189,6 +194,9 @@ export default {
           this.plateUrl = fr.result;
         });
       }
+    },
+    saveObj: function () {
+      if (this.$refs.palate) this.$refs.palate.saveObj();
     },
     incOX: function () {
       if (this.$refs.palate) this.$refs.palate.incOX();

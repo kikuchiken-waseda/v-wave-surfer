@@ -7,6 +7,7 @@
 <script>
 import * as THREE from "three";
 import OBJLoader from "three-obj-loader";
+import OBJExporter from "three-obj-exporter";
 OBJLoader(THREE);
 
 export default {
@@ -63,7 +64,7 @@ export default {
   },
   watch: {
     src: function (val, old_val) {
-      if (val != old_val) this.load_obj(val);
+      if (val != old_val) this.loadObj(val);
     },
     cameraPosition: function (val, old_val) {
       if (val) {
@@ -87,7 +88,7 @@ export default {
         this.camera.updateProjectionMatrix();
       });
     },
-    load_obj: function (obj_path) {
+    loadObj: function (obj_path) {
       const vm = this;
       this.$nextTick(() => {
         const loader = new THREE.OBJLoader();
@@ -101,6 +102,15 @@ export default {
           vm.renderer.render(vm.scene, vm.camera);
         });
       });
+    },
+    saveObj: function () {
+      const exporter = new OBJExporter();
+      const objData = exporter.parse(this.obj);
+      const blob = new Blob([objData], { type: "application/x-tgif" });
+      const elm = document.createElement("a");
+      elm.href = window.URL.createObjectURL(blob);
+      elm.download = "result.obj";
+      elm.click();
     },
     updateORotX: function (rot) {
       const radian = (rot * Math.PI) / 180;
@@ -221,7 +231,7 @@ export default {
     this.renderer.render(this.scene, this.camera);
 
     // シーンにオブジェクトを表示
-    this.load_obj(this.src);
+    this.loadObj(this.src);
   },
 };
 </script>
