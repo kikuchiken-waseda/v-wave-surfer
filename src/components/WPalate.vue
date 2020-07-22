@@ -28,9 +28,18 @@ export default {
     return { dodeca, scene, renderer, camera, light, geometry, material, cube };
   },
   props: {
+    src: {
+      type: String,
+      require: true,
+    },
     aspect: {
       type: Number,
       default: 1,
+    },
+  },
+  watch: {
+    src: function (val, old_val) {
+      if (val != old_val) this.load_obj(val);
     },
   },
   methods: {
@@ -54,6 +63,10 @@ export default {
       this.$nextTick(() => {
         const loader = new THREE.OBJLoader();
         loader.load(obj_path, function (res) {
+          if (vm.dodeca != null) {
+            vm.dodeca = null;
+            vm.scene.remove(vm.dodeca);
+          }
           vm.dodeca = res;
           vm.scene.add(vm.dodeca);
           vm.renderer.render(vm.scene, vm.camera);
@@ -81,6 +94,7 @@ export default {
       antialias: true,
       canvas: canvas,
     });
+
     // 地面を作成
     if (this.scene) {
       const plane2 = new THREE.GridHelper(600);
@@ -88,10 +102,11 @@ export default {
       this.scene.add(plane);
       this.scene.add(plane2);
     }
+
     this.camera.position.set(0, 0, 200);
     this.light.position.set(0, 0, 10);
     this.scene.add(this.light);
-    this.load_obj("/data/asai.obj");
+    this.load_obj(this.src);
     this.animetion();
   },
 };
