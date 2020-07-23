@@ -187,13 +187,11 @@ export default {
     onFileCange: function (e) {
       if (e === undefined || e === null) this.plateUrl = null;
       if (e.name.lastIndexOf(".") <= 0) this.plateUrl = null;
-      if (e.type == "application/x-tgif") {
-        const fr = new FileReader();
-        fr.readAsDataURL(e);
-        fr.addEventListener("load", () => {
-          this.plateUrl = fr.result;
-        });
-      }
+      const fr = new FileReader();
+      fr.readAsDataURL(e);
+      fr.addEventListener("load", () => {
+        this.plateUrl = fr.result;
+      });
     },
     saveObj: function () {
       if (this.$refs.palate) this.$refs.palate.saveObj();

@@ -21,6 +21,7 @@ export default {
       0.1,
       2000
     );
+    const three = THREE;
     const light = new THREE.DirectionalLight(0xffffff);
     const geometry = new THREE.BoxGeometry(1, 1, 1);
     const material = new THREE.MeshNormalMaterial();
@@ -37,6 +38,7 @@ export default {
     };
     return {
       obj,
+      three,
       scene,
       renderer,
       camera,
@@ -91,7 +93,7 @@ export default {
     loadObj: function (obj_path) {
       const vm = this;
       this.$nextTick(() => {
-        const loader = new THREE.OBJLoader();
+        const loader = new this.three.OBJLoader();
         loader.load(obj_path, function (res) {
           if (vm.obj != null) {
             vm.obj = null;
