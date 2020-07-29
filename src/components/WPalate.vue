@@ -8,11 +8,11 @@
 import * as THREE from "three";
 import OBJLoader from "three-obj-loader";
 import OBJExporter from "three-obj-exporter";
-OBJLoader(THREE);
 
 export default {
   name: "w-palate",
   data() {
+    const three = THREE;
     const scene = new THREE.Scene();
     const renderer = null;
     const camera = new THREE.PerspectiveCamera(
@@ -36,6 +36,7 @@ export default {
       z: 0,
     };
     return {
+      three,
       obj,
       scene,
       renderer,
@@ -91,7 +92,8 @@ export default {
     loadObj: function (obj_path) {
       const vm = this;
       this.$nextTick(() => {
-        const loader = new THREE.OBJLoader();
+        OBJLoader(this.three);
+        const loader = new this.three.OBJLoader();
         loader.load(obj_path, function (res) {
           if (vm.obj != null) {
             vm.obj = null;

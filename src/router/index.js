@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Home from "../views/Home.vue";
+import P3DVisualController from "../views/P3DVisualController.vue";
+import A3DVisualController from "../views/A3DVisualController.vue";
 
 Vue.use(VueRouter);
 
@@ -8,7 +9,12 @@ const routes = [
   {
     path: "/",
     name: "Home",
-    component: Home,
+    component: P3DVisualController,
+  },
+  {
+    path: "/wave",
+    name: "wave",
+    component: A3DVisualController,
   },
   {
     path: "/about",

@@ -45,7 +45,7 @@
             prepend-icon="mdi-cube-outline"
             accept="application/x-tgif"
             label="3D Palate Data (.obj)"
-            @change="onFileCange"
+            @change="onFileChange"
           />
         </v-card-text>
         <w-palate
@@ -164,7 +164,7 @@ import WCrossKey from "@/components/base/WCrossKey";
 import WUpDownKey from "@/components/base/WUpDownKey";
 import WHelpDialog from "@/components/base/WHelpDialog";
 export default {
-  name: "Home",
+  name: "p-3d-vc",
   components: {
     WPalate,
     WCrossKey,
@@ -184,16 +184,14 @@ export default {
     },
   }),
   methods: {
-    onFileCange: function (e) {
+    onFileChange: function (e) {
       if (e === undefined || e === null) this.plateUrl = null;
       if (e.name.lastIndexOf(".") <= 0) this.plateUrl = null;
-      if (e.type == "application/x-tgif") {
-        const fr = new FileReader();
-        fr.readAsDataURL(e);
-        fr.addEventListener("load", () => {
-          this.plateUrl = fr.result;
-        });
-      }
+      const fr = new FileReader();
+      fr.readAsDataURL(e);
+      fr.addEventListener("load", () => {
+        this.plateUrl = fr.result;
+      });
     },
     saveObj: function () {
       if (this.$refs.palate) this.$refs.palate.saveObj();
