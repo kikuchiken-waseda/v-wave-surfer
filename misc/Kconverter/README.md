@@ -10,8 +10,8 @@ preprocess_2017 のソフトを用いて変換できる.
 
 データの読み込み（atはaudiotime）
 ```
- >> [at1,bp]=wave_tsvread('biteplate.tsv'); % バイトプレートのファイル
- >> [at2,task]=wave_tsvread('task.tsv'); % 発話タスクのファイル
+>> [at1,bp]=wave_tsvread('biteplate.tsv'); % バイトプレートのファイル
+>> [at2,task]=wave_tsvread('task.tsv'); % 発話タスクのファイル
 ```
 
 回転処理
