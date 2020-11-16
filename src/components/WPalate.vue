@@ -26,6 +26,8 @@ export default {
     const geometry = new THREE.BoxGeometry(1, 1, 1);
     const material = new THREE.MeshNormalMaterial();
     const cube = new THREE.Mesh(geometry, material);
+    const pointGeo = new THREE.Geometry();
+    const points = null;
     const obj = null;
     const cameraRoutation = {
       x: 0,
@@ -43,6 +45,8 @@ export default {
       renderer,
       camera,
       light,
+      points,
+      pointGeo,
       geometry,
       material,
       cube,
@@ -101,9 +105,40 @@ export default {
           }
           vm.obj = res;
           vm.scene.add(vm.obj);
+          // const box = new THREE.Box3().setFromObject(vm.obj);
           vm.renderer.render(vm.scene, vm.camera);
         });
       });
+    },
+    toPoints: function () {
+      const types = ["Mesh", "SkinnedMesh"];
+      this.scene.traverse(
+        function (obj) {
+          if (types.includes(obj.type)) {
+            const geo = new THREE.Geometry().fromBufferGeometry(obj.geometry);
+            const mesh = new THREE.Mesh(geo, obj.material);
+            mesh.applyMatrix4(obj.matrix);
+            mesh.updateMatrix();
+            this.pointGeo.merge(mesh.geometry, mesh.matrix);
+          }
+        }.bind(this)
+      );
+      this.points = new THREE.Points(
+        this.pointGeo,
+        new THREE.PointsMaterial({
+          size: 1,
+          color: 0xffffff,
+          sizeAttenuation: false,
+        })
+      );
+      this.scene.add(this.points);
+      this.obj.visible = false;
+      this.renderer.render(this.scene, this.camera);
+    },
+    removePoints: function () {
+      this.scene.remove(this.points);
+      this.obj.visible = true;
+      this.renderer.render(this.scene, this.camera);
     },
     saveObj: function () {
       const exporter = new OBJExporter();

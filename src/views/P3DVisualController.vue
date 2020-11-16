@@ -1,6 +1,6 @@
 <template>
   <v-row class="home" align="center" justify="center">
-    <v-col cols="6">
+    <v-col cols="12">
       <v-card>
         <v-system-bar color="indigo darken-2" dark>
           <v-spacer></v-spacer>
@@ -12,31 +12,8 @@
           <v-toolbar-title>P-3D-VC</v-toolbar-title>
           <v-spacer></v-spacer>
           <w-help-dialog title="P-3D-VC の使い方">
-            <p v-if="plateUrl == null">まずは硬口蓋データを選択してください.</p>
-            <p v-if="plateUrl == null">
-              その後, 以下のコントローラが表示されます.
-            </p>
-            <p>
-              90度回転モードスイッチ: カメラ十字キーのモードを変更します.
-            </p>
-            <p>
-              オブジェクト回転モードスイッチ:
-              オブジェクト十字キーおよびオブジェクト Z キーのモードを変更します.
-            </p>
-            <p>
-              カメラ十字キー: カメラを回転させます.
-              十字キーが青くなっている場合, 90 度ずつの回転になります
-            </p>
-            <p>
-              オブジェクト十字キー: オブジェクトの位置を変更します.
-              十字キーが緑になっている場合, オブジェクトを回転させます
-            </p>
-            <p>
-              オブジェクトZキー: オブジェクトの位置(Z軸方向)を変更します.
-              十字キーが緑になっている場合, オブジェクトを回転させます
-            </p>
-            <p>
-              camera position: カメラとオブジェクトとの距離を変更します.
+            <p v-for="(text, i) in helpTexts" :key="i">
+              {{ text }}
             </p>
           </w-help-dialog>
         </v-toolbar>
@@ -48,111 +25,127 @@
             @change="onFileChange"
           />
         </v-card-text>
-        <w-palate
-          ref="palate"
-          v-if="plateUrl"
-          :src="plateUrl"
-          :camera-position="cameraPosition"
-        />
-        <v-card-actions v-if="plateUrl">
-          <v-switch
-            v-model="is90mode"
-            label="90 度回転モード"
-            color="blue"
-            hide-details
-          />
-          <v-spacer />
-          <v-switch
-            v-model="isRotmode"
-            label="オブジェクト回転モード"
-            color="teal"
-            hide-details
-          />
-        </v-card-actions>
-        <v-card-actions v-if="plateUrl">
-          <w-cross-key
-            color="blue darken-1"
-            background-color="blue darken-4"
-            icon-color="white"
-            icon="mdi-video"
-            up-icon="mdi-arrow-up-bold"
-            left-icon="mdi-arrow-left-bold"
-            right-icon="mdi-arrow-right-bold"
-            down-icon="mdi-arrow-down-bold"
-            :up-func="inc90CRotY"
-            :left-func="dec90CRotX"
-            :right-func="inc90CRotX"
-            :down-func="dec90CRotY"
-            v-if="is90mode"
-          />
-          <w-cross-key
-            color="amber darken-1"
-            background-color="amber darken-2"
-            icon-color="white"
-            icon="mdi-video"
-            up-icon="mdi-arrow-up-bold"
-            left-icon="mdi-arrow-left-bold"
-            right-icon="mdi-arrow-right-bold"
-            down-icon="mdi-arrow-down-bold"
-            :up-func="incCRotY"
-            :left-func="decCRotX"
-            :right-func="incCRotX"
-            :down-func="decCRotY"
-            v-else
-          />
-          <v-spacer />
-          <w-up-down-key
-            icon="mdi-alpha-z-circle-outline"
-            color="teal darken-1"
-            background-color="teal darken-4"
-            :up-func="incORotZ"
-            :down-func="decORotZ"
-            v-if="isRotmode"
-          />
-          <w-up-down-key
-            icon="mdi-alpha-z-circle-outline"
-            :up-func="incOZ"
-            :down-func="decOZ"
-            v-else
-          />
-          <v-spacer />
-          <w-cross-key
-            icon="mdi-cube-scan"
-            color="teal darken-1"
-            background-color="teal darken-4"
-            :up-func="incORotX"
-            :left-func="decORotY"
-            :right-func="incORotY"
-            :down-func="decORotX"
-            v-if="isRotmode"
-          />
-          <w-cross-key
-            icon="mdi-cube-scan"
-            :up-func="incOY"
-            :left-func="decOX"
-            :right-func="incOX"
-            :down-func="decOY"
-            v-else
-          />
-        </v-card-actions>
-        <v-card-text v-if="plateUrl">
-          <v-subheader>camera position (z)</v-subheader>
-          <v-slider
-            v-model="cameraPosition"
-            min="0"
-            max="400"
-            prepend-icon="mdi-cube-outline"
-          >
-            <template v-slot:thumb-label>
-              <v-icon dark>mdi-video</v-icon>
-            </template>
-          </v-slider>
-        </v-card-text>
-        <v-card-actions v-if="plateUrl">
-          <v-btn @click="saveObj" block color="secondary" dark>
-            Download 3D Data
-          </v-btn>
-        </v-card-actions>
+        <v-row v-if="plateUrl">
+          <v-col cols="6">
+            <w-palate
+              ref="palate"
+              v-if="plateUrl"
+              :src="plateUrl"
+              :camera-position="cameraPosition"
+            />
+          </v-col>
+          <v-col cols="6">
+            <v-card-actions>
+              <v-switch
+                v-model="is90mode"
+                label="90 度回転モード"
+                color="blue"
+                hide-details
+              />
+              <v-spacer />
+              <v-switch
+                v-model="isRotmode"
+                label="オブジェクト回転モード"
+                color="teal"
+                hide-details
+              />
+            </v-card-actions>
+            <v-card-actions>
+              <w-cross-key
+                color="blue darken-1"
+                background-color="blue darken-4"
+                icon-color="white"
+                icon="mdi-video"
+                up-icon="mdi-arrow-up-bold"
+                left-icon="mdi-arrow-left-bold"
+                right-icon="mdi-arrow-right-bold"
+                down-icon="mdi-arrow-down-bold"
+                :up-func="inc90CRotY"
+                :left-func="dec90CRotX"
+                :right-func="inc90CRotX"
+                :down-func="dec90CRotY"
+                v-if="is90mode"
+              />
+              <w-cross-key
+                color="amber darken-1"
+                background-color="amber darken-2"
+                icon-color="white"
+                icon="mdi-video"
+                up-icon="mdi-arrow-up-bold"
+                left-icon="mdi-arrow-left-bold"
+                right-icon="mdi-arrow-right-bold"
+                down-icon="mdi-arrow-down-bold"
+                :up-func="incCRotY"
+                :left-func="decCRotX"
+                :right-func="incCRotX"
+                :down-func="decCRotY"
+                v-else
+              />
+              <v-spacer />
+              <w-up-down-key
+                icon="mdi-alpha-z-circle-outline"
+                color="teal darken-1"
+                background-color="teal darken-4"
+                :up-func="incORotZ"
+                :down-func="decORotZ"
+                v-if="isRotmode"
+              />
+              <w-up-down-key
+                icon="mdi-alpha-z-circle-outline"
+                :up-func="incOZ"
+                :down-func="decOZ"
+                v-else
+              />
+              <v-spacer />
+              <w-cross-key
+                icon="mdi-cube-scan"
+                color="teal darken-1"
+                background-color="teal darken-4"
+                :up-func="incORotX"
+                :left-func="decORotY"
+                :right-func="incORotY"
+                :down-func="decORotX"
+                v-if="isRotmode"
+              />
+              <w-cross-key
+                icon="mdi-cube-scan"
+                :up-func="incOY"
+                :left-func="decOX"
+                :right-func="incOX"
+                :down-func="decOY"
+                v-else
+              />
+            </v-card-actions>
+            <v-card-text>
+              <v-subheader>camera position (z)</v-subheader>
+              <v-slider
+                v-model="cameraPosition"
+                min="0"
+                max="400"
+                prepend-icon="mdi-cube-outline"
+              >
+                <template v-slot:thumb-label>
+                  <v-icon dark>mdi-video</v-icon>
+                </template>
+              </v-slider>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn @click="saveObj" block color="primary" dark>
+                Download 3D Data
+              </v-btn>
+            </v-card-actions>
+            <v-card-actions>
+              <v-btn @click="toPoints" block color="primary" dark>
+                To Point
+              </v-btn>
+            </v-card-actions>
+            <v-card-actions>
+              <v-btn @click="rmPoints" block color="primary" dark>
+                Remove Point
+              </v-btn>
+            </v-card-actions>
+          </v-col>
+        </v-row>
       </v-card>
     </v-col>
   </v-row>
@@ -195,6 +188,12 @@ export default {
     },
     saveObj: function () {
       if (this.$refs.palate) this.$refs.palate.saveObj();
+    },
+    toPoints: function () {
+      if (this.$refs.palate) this.$refs.palate.toPoints();
+    },
+    rmPoints: function () {
+      if (this.$refs.palate) this.$refs.palate.removePoints();
     },
     incOX: function () {
       if (this.$refs.palate) this.$refs.palate.incOX();
@@ -300,6 +299,20 @@ export default {
         this.$refs.palate.updateCRotY(rot);
       }
     },
+  },
+  computed: {
+    helpTexts: () => [
+      "まずは硬口蓋データを選択してください.",
+      "その後, 以下のコントローラが表示されます.",
+      "",
+      "90度回転モードスイッチ: カメラ十字キーのモードを変更します.",
+      "オブジェクト回転モードスイッチ: オブジェクト十字キーおよびオブジェクト Z キーのモードを変更します",
+      "カメラ十字キー: カメラを回転させます. 十字キーが青くなっている場合, 90 度ずつの回転になります",
+      "オブジェクト十字キー: オブジェクトの位置を変更します. 十字キーが緑になっている場合, オブジェクトを回転させます",
+      "オブジェクトZキー: オブジェクトの位置(Z軸方向)を変更します",
+      "十字キーが緑になっている場合, オブジェクトを回転させます",
+      "camera position: カメラとオブジェクトとの距離を変更します",
+    ],
   },
 };
 </script>
